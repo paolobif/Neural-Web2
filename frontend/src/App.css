@@ -1,0 +1,60 @@
+.App {
+  text-align: center;
+}
+
+
+.App-header {
+  background-color: #282c34;
+  height: 70px;
+  width: 90%;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 20px;
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.page-title {
+  align-items: start;
+}
+
+.path-input {
+  height: 50%;
+  width: 50%;
+}
+
+.linkText { 
+  color: white; 
+}
+
+.Home-Page {
+  background-color: white;
+  width: 90%;
+  margin: auto;
+  height: 100vh;
+  color: black;
+}
+
+.file-list {
+  align-items: start;
+  overflow-y: scroll;
+  height: 65vh;
+  background-color: #282c34;
+  color: white;
+}
+
+::-webkit-scrollbar { /* WebKit */
+  width: 0;
+  height: 0;
+}
+
+.main-color {
+  background-color: #282c34;
+  color: white;
+}
