@@ -58,3 +58,10 @@
   background-color: #282c34;
   color: white;
 }
+
+.selected-files {
+  background-color: #282c34;
+  color: white;
+  width: 23%;
+  max-height: 270px;
+}

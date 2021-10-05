@@ -1,13 +1,27 @@
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
+import threading
 import os
 import glob
 
 
 app = Flask(__name__, static_url_path='/static')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///queue.db'
 CORS(app)
 app.config["DEBUG"] = True
+db = SQLAlchemy(app)
+
+
+class Queue(db.Model):
+    pid = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.String(120), unique=False, nullable=False)
+    save = db.Column(db.String(120), unique=False, nullable=False)
+    process = db.Column(db.String(80), unique=False, nullable=False)
+
+    def __repr__(self):
+        return f'<Queue {self.pid}'
 
 
 @app.route('/api/folder/info/<path:subpath>')
@@ -43,6 +57,12 @@ def getDirectory(subpath):
         error_message = "Invalid file path..."
         return jsonify({"message": error_message}), 400
 
+
+@app.route('/api/queue/append', methods=['POST'])
+def appendQueue():
+    r = request.json
+    print(r)
+    return jsonify({"status": "sucess"})
 
 
 if __name__ == '__main__':

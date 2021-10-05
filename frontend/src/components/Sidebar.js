@@ -16,7 +16,7 @@ function Sidebar({ files, selected, setSelected }) {
   
 
   const displayFiles = () => {
-    if (files) {
+    if (files.loaded) {
       const names = files.names
       return (
         <>
@@ -35,7 +35,8 @@ function Sidebar({ files, selected, setSelected }) {
         <Button size="sm" 
           variant="dark" 
           style={{color: "#282c34", backgroundColor: "#5bc0de", border:"None"}}
-          onClick={updateSelected}>
+          onClick={updateSelected}
+          disabled={files.loaded ? false : true}>
           {all ? "select all" : "deselect all"}
         </Button>
       </div>
