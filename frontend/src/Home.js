@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Sidebar from './components/Sidebar'
 import HomeMain from './components/HomeMain'
+
 
 function Home({ files }) {
   const [selected, setSelected] = useState([])

@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, send
 from flask_cors import CORS
 
 import threading
@@ -8,8 +9,9 @@ import glob
 
 
 app = Flask(__name__, static_url_path='/static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///queue.db'
+socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///queue.db'
 app.config["DEBUG"] = True
 db = SQLAlchemy(app)
 
@@ -65,5 +67,11 @@ def appendQueue():
     return jsonify({"status": "sucess"})
 
 
+@socketio.on('message')
+def socket(data):
+    print('recieved: ', data)
+    return None
+    
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port="5000", debug=True, use_reloader=True)
+    socketio.run(app, host="0.0.0.0", port="5000")

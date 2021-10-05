@@ -1,7 +1,30 @@
-import React, {useState} from 'react'
+import React, { useState, useContext, useEffect } from 'react'
+import { io } from "socket.io-client"
 import ProcessForm from './minis/ProcessForm'
+import { GlobalContext } from '../GlobalContext'
+
 
 function HomeMain({ selected, source }) {
+  const globals = useContext(GlobalContext)
+  const [socket, setSocket] = useState(null)
+
+  const sendTest = () => {
+    console.log("test sent")
+    socket.on('message', () => {'test222'})
+    socket.emit('message', "hi!!")
+
+  }
+
+  useEffect(() => {
+    const newSocket = io("http://10.0.0.243:5000", {
+      extraHeaders: {
+        'Access-Control-Allow-Origin': "*"
+      }
+    })
+    setSocket(newSocket)
+    newSocket.on('message', () => {console.log('sent')})
+    return () => newSocket.close()
+  }, [setSocket])
 
   return (
     <div className="d-flex justify-content-between">
@@ -17,6 +40,7 @@ function HomeMain({ selected, source }) {
           {selected.map(file => <p className="p-0 mb-2">{file}</p>)}
         </div>
       </div>
+      <button className="btn-primary" onClick={sendTest}>Test Socket</button>
     </div>
   )
 }
