@@ -16,7 +16,7 @@ function HomeMain({ selected, source }) {
   }
 
   useEffect(() => {
-    const newSocket = io("http://10.0.0.243:5000", {
+    const newSocket = io(globals.host, {
       extraHeaders: {
         'Access-Control-Allow-Origin': "*"
       }
@@ -40,7 +40,6 @@ function HomeMain({ selected, source }) {
           {selected.map(file => <p className="p-0 mb-2">{file}</p>)}
         </div>
       </div>
-      <button className="btn-primary" onClick={sendTest}>Test Socket</button>
     </div>
   )
 }

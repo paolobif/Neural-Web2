@@ -6,12 +6,17 @@ from flask_cors import CORS
 import threading
 import os
 import glob
+import random
+import time
+
+from utils.threading import monitor_queue
 
 
 app = Flask(__name__, static_url_path='/static')
 socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///queue.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["DEBUG"] = True
 db = SQLAlchemy(app)
 
@@ -21,9 +26,68 @@ class Queue(db.Model):
     path = db.Column(db.String(120), unique=False, nullable=False)
     save = db.Column(db.String(120), unique=False, nullable=False)
     process = db.Column(db.String(80), unique=False, nullable=False)
+    state = db.Column(db.Integer, unique=False, nullable=False)
+    time = db.Column(db.Float, unique=False, nullable=False)
 
     def __repr__(self):
         return f'<Queue {self.pid}'
+
+
+class Data():
+    queue = []
+    done = []
+    working = []
+    progress = 0
+
+    def __init__(self, db):
+        self.db = db
+        self.update_db()
+
+    def update_db(self):
+        self.q_query = Queue.query.filter_by(state=0).all()
+        self.d_query = Queue.query.filter_by(state=1).all()
+        self.w_query = Queue.query.filter_by(state=2).all()
+
+        self.queue = self.convert_to_list(self.q_query)
+        self.done = self.convert_to_list(self.d_query)
+        self.working = self.convert_to_list(self.w_query)
+
+    def remove_item(self, pids: list):
+        for pid in pids:
+            query = Queue.query.filter_by(pid=pid).first()
+            db.session.delete(query)
+        db.session.commit()
+        self.update_db()
+
+    def update_state(self, pid):
+        # adds it back to the queue if was stopped or started part way.
+        for working in self.w_query:
+            working.state = 0
+        # sets next pid to working.
+        new_worker = Queue.query.filter_by(pid=pid).first()
+        new_worker.state = 2
+        self.progress = 0
+        db.session.commit()
+        self.update_db()
+
+    @staticmethod
+    def sort_list(items: list, reverse=False):
+        # sorts by time.
+        sorted_list = sorted(items, key=lambda x: x[5], reverse=reverse)
+        return sorted_list
+
+    @staticmethod
+    def convert_to_list(query_results):
+        results = []
+        for res in query_results:
+            res_list = [res.pid, res.path, res.save,
+                        res.process, res.state, res.time]
+            results.append(res_list)
+        results = sorted(results, key=lambda x: x[5], reverse=False)
+        return results
+
+
+data = Data(db)
 
 
 @app.route('/api/folder/info/<path:subpath>')
@@ -33,14 +97,14 @@ def getDirectory(subpath):
     input_path = os.path.join("static", subpath)
     file_type = request.args.get('type')
     print(file_type)
-    
+
     # Checks if path exists and if path is a file or directory
     if os.path.exists(input_path):
         if os.path.isfile(input_path):
             # If the provided path is just a file
             files = os.path.basename(input_path)
             path = os.path.dirname(input_path)
-        
+
         elif file_type == "Video":
             # If provided type is Video
             video_files = glob.glob(f"{input_path}/*.avi")
@@ -51,10 +115,10 @@ def getDirectory(subpath):
             # Everything esle for now
             files = os.listdir(input_path)
             path = input_path
-        
+
         print(subpath)
         return jsonify({"path": path, "names": files})
-    
+
     else:
         error_message = "Invalid file path..."
         return jsonify({"message": error_message}), 400
@@ -63,7 +127,23 @@ def getDirectory(subpath):
 @app.route('/api/queue/append', methods=['POST'])
 def appendQueue():
     r = request.json
+    form = r['form']
     print(r)
+    for name in form['selected']:
+        pid = random.randint(0, 1000000000000)
+        unix_time = time.time()
+        new_entry = Queue(pid=pid,
+                          path=os.path.join(form['source'], name),
+                          save=form['name'],
+                          process=form['type'],
+                          state=0,
+                          time=unix_time)
+        db.session.add(new_entry)
+        db.session.commit()
+
+    print(data.queue)
+    print(data.working)
+    print(data.done)
     return jsonify({"status": "sucess"})
 
 
@@ -71,7 +151,11 @@ def appendQueue():
 def socket(data):
     print('recieved: ', data)
     return None
-    
+
 
 if __name__ == '__main__':
     socketio.run(app, host="0.0.0.0", port="5000")
+
+    # Start Threading.
+    # monitoring_thread = threading.Thread(target = monitor_queue, args = [data])
+    # monitoring_thread.start()

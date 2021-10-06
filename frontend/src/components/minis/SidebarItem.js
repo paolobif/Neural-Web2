@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 
-function SidebarItem({ filename, selected, setSelected, key}) {
+function SidebarItem({ filename, selected, setSelected}) {
   const [clicked, setClicked] = useState(false)
 
   const handleClick = (e) => {

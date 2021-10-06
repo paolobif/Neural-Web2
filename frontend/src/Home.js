@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import Sidebar from './components/Sidebar'
 import HomeMain from './components/HomeMain'
+import Queue from './components/Queue'
 
 
 function Home({ files }) {
@@ -18,6 +19,7 @@ function Home({ files }) {
           </div>
           <div className="col-md">
             <HomeMain selected={selected} source={files.path}/>
+            <Queue />
           </div>
         </div>
       </div>
