@@ -36,7 +36,7 @@ def process_item(pid, data):
 
     while (data.progress < 100):
         data.progress += 1
-        time.sleep(0.5)
+        time.sleep(0.6)
         print("progress: ", data.progress, "---  item: ", pid)
 
     data.mark_complete(pid)
