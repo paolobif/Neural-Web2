@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, emit  # , send
 from flask_cors import CORS
 
 import threading
@@ -39,9 +39,9 @@ class Data():
     working = []
     progress = 0
 
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
         self.update_db()
+        self.working_cleanup()
 
     def update_db(self):
         self.q_query = Queue.query.filter_by(state=0).all()
@@ -60,13 +60,34 @@ class Data():
         self.update_db()
 
     def update_state(self, pid):
-        # adds it back to the queue if was stopped or started part way.
+        # Set previous item to done.
         for working in self.w_query:
-            working.state = 0
+            working.state = 1
         # sets next pid to working.
         new_worker = Queue.query.filter_by(pid=pid).first()
         new_worker.state = 2
         self.progress = 0
+        db.session.commit()
+        self.update_db()
+
+    def mark_complete(self, pid):
+        for working in self.w_query:
+            working.state = 1
+        self.progress = 0
+        db.session.commit()
+        self.update_db()
+
+    def working_cleanup(self):
+        # Removes working and adds back to the queue.
+        # if self.progress < 100:
+        for working in self.w_query:
+            working.state = 0
+        # elif self.progress == 100:
+        #     for working in self.w_query:
+        #         working.state = 1
+        # else:
+        #     for working in self.w_query:
+        #         self.remove_item([working.pid])
         db.session.commit()
         self.update_db()
 
@@ -86,8 +107,20 @@ class Data():
         results = sorted(results, key=lambda x: x[5], reverse=False)
         return results
 
+    @staticmethod
+    def clear_all():
+        q_all = Queue.query.all()
+        for q in q_all:
+            db.session.delete(q)
+        db.session.commit()
 
-data = Data(db)
+
+data = Data()
+
+
+# @atexit.register
+# def cleanup():
+#     data.working_cleanup()
 
 
 @app.route('/api/folder/info/<path:subpath>')
@@ -147,15 +180,36 @@ def appendQueue():
     return jsonify({"status": "sucess"})
 
 
-@socketio.on('message')
-def socket(data):
-    print('recieved: ', data)
-    return None
+@socketio.on('connect')
+def test_connect(auth):
+    emit('my response', {'data': 'Connected'})
 
+
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
+
+
+@socketio.on('message')
+def handle_message(data):
+    print('received message: ' + data)
+
+# @socketio.on('connect')
+# def connect(sid, environ):
+#     print(sid, 'connected')
+#     # print("connected")
+#     # print('recieved: ', client)
+#     # emit('message', {'progress': data.progress}, broatcast=True)
+
+
+# @socketio.on('disconnect')
+# def disconnect(sid):
+#     print(sid, 'disconnected')
+ 
 
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port="5000")
-
     # Start Threading.
-    # monitoring_thread = threading.Thread(target = monitor_queue, args = [data])
-    # monitoring_thread.start()
+    monitoring_thread = threading.Thread(target=monitor_queue, args=[data])
+    monitoring_thread.start()
+
+    socketio.run(app, host="0.0.0.0", port="5000", use_reloader=False)

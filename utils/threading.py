@@ -1,9 +1,10 @@
 import time
+
 # Loops through and monitors queue status.
 # Begins processing each item in the queue.
 
 
-def monitor_queue(queue, db):
+def monitor_queue(data):
     """Threaded loop that tracks state of queue
     and pops items to be processed.
 
@@ -12,31 +13,30 @@ def monitor_queue(queue, db):
         db (string): path to database.
     """
     while True:
-        if queue:
-            active_pid = queue.pop(0)
-            process_item(db, active_pid)
+        data.update_db()
+        print("waiting.....")
+        if len(data.queue) > 0:
+            active_item = data.queue[0]
+            process_item(active_item[0], data)
 
-            print(len(queue))
-            print(queue)
+            print(len(data.queue))
+            print(data.queue)
 
-        time.sleep(0.5) 
+        time.sleep(0.5)
 
 
-def process_item(db, pid):
+def process_item(pid, data):
     """Processes poped item and upates progress and state in the database
 
     Args:
         db (string): path to database.
         pid (int): process id.
     """
-    queueDB = QueueDB(db, "news")
-    queueDB.update_status(pid, 1)  # update process state to inprogress.
-    
-    # Temp processing to show progress on item.
-    for i in range (1, 101):
-        queueDB.update_progress(pid, i)
-        print(pid, i)
-        time.sleep(0.2)
+    data.update_state(pid)  # Puts pid into work mode.
 
-    queueDB.update_status(pid, 2)  # update to completed.
-    queueDB.close()
+    while (data.progress < 100):
+        data.progress += 1
+        time.sleep(0.1)
+        print("progress: ", data.progress, "---  item: ", pid)
+
+    data.mark_complete(pid)
