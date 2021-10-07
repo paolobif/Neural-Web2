@@ -3,16 +3,19 @@ import ProgressItem from './ProgressItem'
 
 function QueueDone({ items, status }) {
   
-  useEffect(() => {
-    console.log("change")
-  }, [items])
+  // useEffect(() => {
+  //   console.log("change")
+  // }, [items])
+  let progress = 100
+  if (status == "info") {
+    progress = 0
+  }
 
   return (
     <>
-    {console.log(items)}
       {
-        items.queue.map(item => {
-          return <ProgressItem item={item} progress={0} status={status} />
+        items.map(item => {
+          return <ProgressItem item={item} progress={progress} status={status} />
         })
       }
     </>

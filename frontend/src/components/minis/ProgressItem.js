@@ -9,11 +9,11 @@ import axios from 'axios'
 
 function ProgressItem({ item, progress, status }) {
   const style = {
-                  backgroundColor: "#61dafb",
+                  backgroundColor: "#282c3",//"#61dafb",
                   width: "95%",
                   borderRadius: "0px",
                   borderLeftRadius: "5px",
-                  boxShadow: "5px 5px #282c34",
+                  boxShadow: "5px 5px #61dafb" //#282c34",
                 }
   
   const globals = useContext(GlobalContext)
@@ -24,7 +24,7 @@ function ProgressItem({ item, progress, status }) {
   }
 
   return (
-    <div class="row p-2 mb-4" style={style} >
+    <div className="row p-2 mb-4" style={style} >
       <div>
         {
           status == "info" ?

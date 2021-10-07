@@ -49,7 +49,7 @@ class Data():
         self.w_query = Queue.query.filter_by(state=2).all()
 
         self.queue = self.convert_to_list(self.q_query)
-        self.done = self.convert_to_list(self.d_query)
+        self.done = self.convert_to_list(self.d_query, limit=10, reverse=True)
         self.working = self.convert_to_list(self.w_query)
 
     def remove_item(self, pids: list):
@@ -70,9 +70,14 @@ class Data():
         db.session.commit()
         self.update_db()
 
-    def mark_complete(self):
+    def mark_complete(self, pid):
         for working in self.w_query:
             working.state = 1
+
+        query = Queue.query.filter_by(pid=pid).first()
+        if query:
+            query.state = 1
+
         self.progress = 0
         db.session.commit()
         self.update_db()
@@ -98,14 +103,14 @@ class Data():
         return sorted_list
 
     @staticmethod
-    def convert_to_list(query_results):
+    def convert_to_list(query_results, limit=None, reverse=False):
         results = []
         for res in query_results:
             res_list = [res.pid, res.path, res.save,
                         res.process, res.state, res.time]
             results.append(res_list)
-        results = sorted(results, key=lambda x: x[5], reverse=False)
-        return results
+        results = sorted(results, key=lambda x: x[5], reverse=reverse)
+        return results[:limit]
 
     @staticmethod
     def clear_all():
@@ -199,6 +204,7 @@ def handle_message(data):
 
 @socketio.on('progress_data')
 def send_data(source_data):
+    data.update_db()
     return_data = {
         "queue": data.queue,
         "done": data.done,

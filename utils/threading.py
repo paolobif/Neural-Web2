@@ -22,7 +22,7 @@ def monitor_queue(data):
             print(len(data.queue))
             print(data.queue)
 
-        time.sleep(0.5)
+        time.sleep(0.2)
 
 
 def process_item(pid, data):
@@ -39,4 +39,4 @@ def process_item(pid, data):
         time.sleep(0.1)
         print("progress: ", data.progress, "---  item: ", pid)
 
-    data.mark_complete()
+    data.mark_complete(pid)
