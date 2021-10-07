@@ -39,4 +39,4 @@ def process_item(pid, data):
         time.sleep(0.1)
         print("progress: ", data.progress, "---  item: ", pid)
 
-    data.mark_complete(pid)
+    data.mark_complete()

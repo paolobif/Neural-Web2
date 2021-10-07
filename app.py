@@ -70,7 +70,7 @@ class Data():
         db.session.commit()
         self.update_db()
 
-    def mark_complete(self, pid):
+    def mark_complete(self):
         for working in self.w_query:
             working.state = 1
         self.progress = 0
@@ -174,25 +174,44 @@ def appendQueue():
         db.session.add(new_entry)
         db.session.commit()
 
-    print(data.queue)
-    print(data.working)
-    print(data.done)
+    # print(data.queue)
+    # print(data.working)
+    # print(data.done)
     return jsonify({"status": "sucess"})
 
 
+@app.route('/api/queue/delete/<pid>')
+def delete_process(pid):
+    data.remove_item([pid])
+    return jsonify({"status": "sucess"})
+
+
+# Handler for a message recieved over 'connect' channel
 @socketio.on('connect')
-def test_connect(auth):
-    emit('my response', {'data': 'Connected'})
+def test_connect():
+    emit('after connect',  {'data': 'Lets dance'})
+
+
+@socketio.on('message')
+def handle_message(data):
+    print('received message: ' + data)
+
+
+@socketio.on('progress_data')
+def send_data(source_data):
+    return_data = {
+        "queue": data.queue,
+        "done": data.done,
+        "working": data.working,
+        "progress": data.progress
+    }
+    emit('progress_data', return_data)
 
 
 @socketio.on('disconnect')
 def test_disconnect():
     print('Client disconnected')
 
-
-@socketio.on('message')
-def handle_message(data):
-    print('received message: ' + data)
 
 # @socketio.on('connect')
 # def connect(sid, environ):
@@ -205,7 +224,6 @@ def handle_message(data):
 # @socketio.on('disconnect')
 # def disconnect(sid):
 #     print(sid, 'disconnected')
- 
 
 if __name__ == '__main__':
     # Start Threading.

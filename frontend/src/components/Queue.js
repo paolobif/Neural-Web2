@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { io } from "socket.io-client"
 import { GlobalContext } from '../GlobalContext'
+import Working from './minis/Working'
+import QueueDone from './minis/QueueDone'
 
 const style = {
   height: "100%",
@@ -12,15 +14,12 @@ const style = {
 function Queue() {
   const globals = useContext(GlobalContext)
   const [socket, setSocket] = useState(null)
+  const [data, setData] = useState({queue: [],
+                                    done: [],
+                                    working: [],
+                                    progress: 0
+                                  })
 
-  const sendTest = () => {
-    console.log("test sent")
-    socket.on('message', () => {
-      socket.emit('message', "hi!!")
-    })
-    
-
-  }
 
   useEffect(() => {
     const newSocket = io(globals.host, {
@@ -28,26 +27,37 @@ function Queue() {
         'Access-Control-Allow-Origin': "*"
       }
     })
-    newSocket.on('connect', () => {newSocket.emit('my event', {data: 'Im connected!'})})
+    
     setSocket(newSocket)
-    return () => newSocket.close()
+    console.log('connected')
+    newSocket.on('progress_data', (queue_info) => {setData(queue_info)})
+
+    const pid = setInterval(() => newSocket.emit('progress_data', ''), 200)
+    return () => {
+      clearInterval(pid)
+      newSocket.close()
+    }
   }, [setSocket])
 
   return (
-    <div className="container p-0" >
-      <div className="pt-3 main-color" style={style}>
+    <div className="container ms-1 ps-4 pe-4 pt-0" >
+      <div className="" style={style}>
         <div className="row">
           <div className="col p-0">
-            <p className="result-header">Queue</p>
-            <div style={{backgroundColor:"white", color:"green"}}>
-              Test
+            <h5>Queue</h5>
+            <div className="mt-4">
+              <Working working={data.working} progress={data.progress} />
+              <QueueDone items={data} status="info" />
             </div>
           </div>
           <div className="col p-0">
-            <p className="result-header">Finished</p>
-            <div style={{backgroundColor:"white", color:"red"}}>
+            <h5>Finished</h5>
+            <div style={{color:"red"}}>
               Test
-              <button onclick={sendTest}>hi!</button>
+              {data ?
+                data.progress :
+                null
+              }
             </div>
           </div>
         </div>

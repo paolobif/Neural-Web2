@@ -60,8 +60,8 @@
 }
 
 .selected-files {
-  background-color: #282c34;
-  color: white;
+  background-color:	#96A4A6;
+  color: black;
   width: 23%;
   max-height: 270px;
 }
