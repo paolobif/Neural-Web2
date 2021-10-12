@@ -9,7 +9,7 @@ import Home from "./Home";
 import './App.css';
 
 const globalsDefault = {
-  host: "http://192.168.86.248:5000"
+  host: "http://10.0.0.243:5000"
 }
 
 

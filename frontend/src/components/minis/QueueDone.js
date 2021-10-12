@@ -15,7 +15,7 @@ function QueueDone({ items, status }) {
     <>
       {
         items.map(item => {
-          return <ProgressItem item={item} progress={progress} status={status} />
+          return <ProgressItem item={item} progress={progress} status={status} key={item} />
         })
       }
     </>
