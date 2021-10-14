@@ -9,7 +9,7 @@ import glob
 import random
 import time
 
-from utils.threading import monitor_queue
+from app_utils.nn_threading import monitor_queue
 
 
 app = Flask(__name__, static_url_path='/static')

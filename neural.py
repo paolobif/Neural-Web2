@@ -3,10 +3,10 @@ sys.path.insert(0, "/home/paolobif/Dev/worm_neural_v2/nn/")
 # sys.path.insert(0, "/Users/paolobifulco/Lab_Work/Worm-Yolo3")
 import os
 import cv2
-import pandas as pd
 
 from yolov3_core import *
 from vid_annotater_bulk import YoloToCSV
+
 
 class VidModel(YoloModelLatest):
     """Processes the videos from the gui and saves the results in the
@@ -24,7 +24,7 @@ class VidModel(YoloModelLatest):
                 'augment': None,
                 'classes': None}
 
-    save_root = "static/results"  # Where the results are stored.
+    save_root = "./static/results"  # Where the results are stored.
 
     frame_total = 0  # Total number of frames in video
     current = 0  # Current frame in processing.
@@ -63,7 +63,7 @@ class VidModel(YoloModelLatest):
         print(f"Saving to: {self.save_video_path}")
 
         # Process Video.
-        for _ in range(self.frame_total):
+        for _ in range(int(self.frame_total)):
             _, frame = vid.read()
             self.current = vid.get(cv2.CAP_PROP_POS_FRAMES)
             toCSV = YoloToCSV(self, frame, self.current)
@@ -76,7 +76,8 @@ class VidModel(YoloModelLatest):
             print(self.current, self.frame_total)
             print(self.data.progress)
 
-        writer.release
+        if self.write_vid:
+            writer.release
 
     # Updates data progress percentage.
     def update_queue_progress(self):
@@ -89,7 +90,7 @@ if __name__ == '__main__':
     # Just for testing.
     class TestProgress:
         progress = 0
-        video = "static/videos/505.avi"
+        video = "./static/videos/505.avi"
         save = "test_path"
 
     test = TestProgress()
