@@ -120,7 +120,7 @@ class Data():
         db.session.commit()
 
 
-data = Data()
+# data = Data()
 
 
 # @atexit.register
@@ -194,7 +194,7 @@ def delete_process(pid):
 # Handler for a message recieved over 'connect' channel
 @socketio.on('connect')
 def test_connect():
-    emit('after connect',  {'data': 'Lets dance'})
+    emit('after connect', {'data': 'Lets dance'})
 
 
 @socketio.on('message')
@@ -233,6 +233,7 @@ def test_disconnect():
 
 if __name__ == '__main__':
     # Start Threading.
+    data = Data()
     monitoring_thread = threading.Thread(target=monitor_queue, args=[data])
     monitoring_thread.start()
 

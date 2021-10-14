@@ -14,6 +14,7 @@ def monitor_queue(data):
         db (string): path to database.
     """
     while True:
+        # timer_start = time.time()
         data.update_db()
         print("waiting.....")
         if len(data.queue) > 0:
@@ -48,3 +49,15 @@ def process_item(item, data):
     #     data.progress += 1
     #     time.sleep(0.6)
     #     print("progress: ", data.progress, "---  item: ", pid)
+
+
+def check_time(timer_current, timer_start):
+    """Checks if item has been added to the queue within
+    specified time window. If not... shuts down computer
+
+    Args:
+        timer_current (float): current unix time.
+        timer_start (float): start of timer unix time.
+    """
+
+    pass
