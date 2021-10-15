@@ -1,5 +1,9 @@
 import time
+import os
 from neural import VidModel
+
+# Shutdown check.
+shutdown = True
 
 # Loops through and monitors queue status.
 # Begins processing each item in the queue.
@@ -13,11 +17,13 @@ def monitor_queue(data):
         queue (list): list of process ids.
         db (string): path to database.
     """
+    timer_start = time.time()
     while True:
-        # timer_start = time.time()
         data.update_db()
         print("waiting.....")
         if len(data.queue) > 0:
+            timer_start = time.time()
+
             active_item = data.queue[0]
             process_item(active_item, data)
 
@@ -25,6 +31,9 @@ def monitor_queue(data):
             print(data.queue)
 
         time.sleep(0.1)
+
+        if shutdown:
+            check_time(timer_start)  # Shuts down computer
 
 
 def process_item(item, data):
@@ -44,20 +53,22 @@ def process_item(item, data):
 
     data.mark_complete(pid)
 
-
     # while (data.progress < 100):
     #     data.progress += 1
     #     time.sleep(0.6)
     #     print("progress: ", data.progress, "---  item: ", pid)
 
 
-def check_time(timer_current, timer_start):
+def check_time(timer_start, thresh=7200):
     """Checks if item has been added to the queue within
     specified time window. If not... shuts down computer
+    Calculates current time when function is called.
 
     Args:
-        timer_current (float): current unix time.
         timer_start (float): start of timer unix time.
+        thresh (int): time in seconds. Default is 2hours.
     """
-
-    pass
+    current_time = time.time()
+    delta = current_time - timer_start
+    if delta > thresh:
+        os.system("sudo shutdown ")
