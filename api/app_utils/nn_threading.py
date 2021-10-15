@@ -71,4 +71,15 @@ def check_time(timer_start, thresh=7200):
     current_time = time.time()
     delta = current_time - timer_start
     if delta > thresh:
-        os.system("sudo shutdown ")
+        # scrappy shutdown if in container...
+        try:
+            os.system("sudo shutdown -h now")
+        except Exception as e:
+            print(e)
+
+        try:
+            os.system("bash ../static/shutdown.sh")
+        except Exception as e:
+            print(e)
+            print("unable to shutdown...")
+
