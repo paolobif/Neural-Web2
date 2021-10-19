@@ -55,7 +55,14 @@ function FileUpload() {
       <div class="mt-3">
         <input class="form-control" type="file" multiple="multiple" onChange={onFileChange} /> 
         {/* multiple="multiple" accept="video/*" */}
-        <input class="form-control" list="datalistOptions" id="dirselect" placeholder="Destination" value="videos" onChange={onDestination} />
+        <input
+          class="form-control" 
+          list="datalistOptions"
+          id="dirselect"
+          placeholder="Destination"
+          value={destination}
+          onChange={onDestination}
+        />
         <datalist id="datalistOptions">
           <option value="videos" />
           <option value ="" />
