@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { Button } from 'react-bootstrap'
+import ProgressBar from 'react-bootstrap/ProgressBar'
 import axios from 'axios';
 import { GlobalContext } from '../../GlobalContext';
 
@@ -8,6 +9,9 @@ function FileUpload() {
   const globals = useContext(GlobalContext)
   const [files, setFiles] = useState(null)
   const [destination, setDestination] = useState("videos")
+  const [isUploading, setIsUploading] = useState(false)
+  const [progessData, setProgressData] = useState(0)
+  const [currentFile, setCurrentFile] = useState("")
 
   // Updates the files that are selected.
   const onFileChange = (event) => {
@@ -38,15 +42,32 @@ function FileUpload() {
     console.log(file.name)
     formData.append("dest", destination)
 
-    const response = await axios.post(path, formData, { headers: headers })
+    const response = await axios.post(path, formData, { 
+      headers: headers,
+      onUploadProgress: (progressEvent) => {
+        // Modifies state
+        setCurrentFile(file.name)
+        setIsUploading(true)
+        // Gets total length
+        const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length')
+        console.log("onUploadProgress", totalLength);
+        if (totalLength !== null) {
+					setProgressData( Math.round( (progressEvent.loaded * 100) / totalLength) );
+        }
+      } 
+    })
+    setIsUploading(false)
   }
 
   // Upload files to the api endpoint.
   const uploadFiles = () => {
+    setIsUploading(true)
     for (let i=0; i < files['length']; i ++) {
       console.log(files[i].name)
       uploadOneFile(files[i])
     }
+    setIsUploading(false)
+    // setCurrentFile("")
   }
 
   return (
@@ -67,7 +88,16 @@ function FileUpload() {
           <option value="videos" />
           <option value ="" />
         </datalist>
+        <div class="mt-2">
+          <ProgressBar
+            className="mt-2"
+            variant="info"
+            now={progessData}
+            label={`${currentFile}`}
+          />
+        </div>
         <Button
+          disabled={isUploading? true : false}
           className="mt-3"
           variant="info"
           onClick={uploadFiles}>Upload
@@ -78,3 +108,4 @@ function FileUpload() {
 }
 
 export default FileUpload
+ 
