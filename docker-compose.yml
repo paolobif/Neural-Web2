@@ -1,4 +1,4 @@
-version: "3.9"
+version: "2.3"
 services:
   web:
     # image: neural_frontend
@@ -11,6 +11,8 @@ services:
   nn:
     # image: nn_api
     build: ./api
+    # command: nvidia-smi
+    runtime: nvidia
     ports:
       - "5000:5000"
     volumes:

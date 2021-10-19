@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import ProcessForm from './minis/ProcessForm'
+import FileUpload from './minis/FileUpload'
 
 
 function HomeMain({ selected, source }) {
@@ -8,6 +9,9 @@ function HomeMain({ selected, source }) {
     <div className="d-flex justify-content-between">
       <div style={{flexGrow: 1}}>
         <ProcessForm selected={selected} source={source}/>
+      </div>
+      <div>
+        <FileUpload />
       </div>
       {/* <div className="selected-files mt-2">
         <div className="pt-3 ps-3 text-start">

@@ -120,14 +120,6 @@ class Data():
         db.session.commit()
 
 
-# data = Data()
-
-
-# @atexit.register
-# def cleanup():
-#     data.working_cleanup()
-
-
 @app.route('/api/folder/info/<path:subpath>')
 def getDirectory(subpath):
     """Get endpoint for list of files within specified directory."""
@@ -185,10 +177,29 @@ def appendQueue():
     return jsonify({"status": "sucess"})
 
 
+@app.route('/api/files/upload', methods=['POST'])
+def uploadFile():
+    static = "./static"
+    destination = request.form["dest"]
+    sent_file = request.files['img']
+    file_name = request.form["name"]
+    print(destination)
+    print(sent_file)
+
+    # Create save directory.
+    save_dir = os.path.join(static, destination)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    save_path = os.path.join(save_dir, file_name)
+    sent_file.save(save_path)
+    return jsonify({"status": "success"})
+
+
 @app.route('/api/queue/delete/<pid>')
 def delete_process(pid):
     data.remove_item([pid])
-    return jsonify({"status": "sucess"})
+    return jsonify({"status": "success"})
 
 
 # Handler for a message recieved over 'connect' channel

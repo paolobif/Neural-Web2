@@ -3,7 +3,7 @@ import os
 from neural import VidModel
 
 # Shutdown check.
-shutdown = True
+shutdown = False
 
 # Loops through and monitors queue status.
 # Begins processing each item in the queue.
