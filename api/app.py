@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, emit  # , send
 from flask_cors import CORS
@@ -10,6 +10,7 @@ import random
 import time
 
 from app_utils.nn_threading import monitor_queue
+from app_utils.app_utils import *
 
 
 app = Flask(__name__, static_url_path='/static')
@@ -200,6 +201,52 @@ def uploadFile():
 def delete_process(pid):
     data.remove_item([pid])
     return jsonify({"status": "success"})
+
+
+@app.route('/api/results/available')
+def fetch_results():
+    """ Returns list of directories located in the results folder.
+    URL params:
+        dir : path to directory you want to downlaod.
+        dl : wether you want to download or just view list of files.
+
+    Returns:
+        json: map of folders located within results
+    """
+    downlaod = request.args.get('dl')
+    path = request.args.get('dir')
+
+    base_path = os.path.join(os.getcwd(),'static/results')
+
+    if path:
+        # Another path check.
+        path = os.path.join(base_path, path)
+        if is_safe_path(base_path, path):
+            base_path = os.path.join(base_path, path)
+        else:
+            return jsonify({"error": "invalid path"}), 400 
+
+    print(base_path)
+    if not path_safe(base_path):  # Make sure the path doesn't traverse.
+        return jsonify({"error": "select a different path"}), 400
+
+    if not os.path.exists(base_path):  # Check if path exists.
+        return jsonify({"error": "invalid path"}), 400
+
+    if not downlaod:  # If no download.
+        files = os.listdir(base_path)
+        return jsonify({"results": files})
+    else:
+        print(f'Downloading path: {base_path}')
+        try:
+            zip_name = os.path.basename(base_path)  # Name for saved zip.
+            zip_path = compress_directory(base_path, zip_name)  # Makes zip file.
+            yield  send_from_directory(
+                base_path, f'{zip_name}.zip', as_attachment=True, attachment_filename=f'{zip_name}.zip')
+            os.remove(zip_path)  # Cleanup zip file.
+        except:
+            return jsonify({"error": "unable to download file"}), 500
+
 
 
 # Handler for a message recieved over 'connect' channel

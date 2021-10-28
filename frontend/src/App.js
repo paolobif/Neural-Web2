@@ -4,6 +4,7 @@ import { GlobalContext } from "./GlobalContext"
 import { FileContext } from "./FileContext"
 import Header from './components/Header';
 import Home from "./Home";
+import Results from "./Results";
 
 
 import './App.css';
@@ -30,13 +31,13 @@ function App() {
               <Home files={files} />
             </Route>
 
-            <Route exact path="/about">
+            <Route exact path="/results">
               <div>
-                about page
+                <Results />
               </div>
             </Route>
 
-          </Switch>  
+          </Switch>
         </div>
 
       </GlobalContext.Provider>

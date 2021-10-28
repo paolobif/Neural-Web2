@@ -29,8 +29,8 @@
   width: 50%;
 }
 
-.linkText { 
-  color: white; 
+.linkText {
+  color: white;
 }
 
 .Home-Page {
@@ -64,4 +64,11 @@
   color: black;
   width: 23%;
   max-height: 270px;
+}
+
+.results-main {
+  width: 90%;
+  height: 90vh;
+  margin: auto;
+  background-color: #282c34;
 }

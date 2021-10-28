@@ -47,8 +47,8 @@ function Header({ setFiles }) {
         </input>
         <Button onClick={fetchFiles} className="btn-light me-2">Load</Button>
       </div>
-      <Link to="/about" className="me-4 mb-3 nav-link align-self-end" style={ linkStyle }>
-        About
+      <Link to="/results" className="me-4 mb-3 nav-link align-self-end" style={ linkStyle }>
+        Results
       </Link>
 
     </div>
