@@ -8,22 +8,17 @@ import Results from "./Results";
 import Login from "./Login";
 import Permissioned from "./Permissioned";
 
-
 import './App.css';
+
 
 const globalsDefault = {
   host: "http://10.0.0.243:5000"
 }
 
 
-
 function App() {
   const [files, setFiles] = useState({names: "", source: "", loaded: false})
   const [loggedIn, setLoggedIn] = useState(false)
-
-  const redirectLogin = () => {
-    history.push('/login')
-  }
 
   return (
     <Router>
@@ -58,7 +53,6 @@ function App() {
 
           </Switch>
         </div>
-        <button onClick={redirectLogin}>route</button>
 
       </GlobalContext.Provider>
     </Router>
