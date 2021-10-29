@@ -1,9 +1,11 @@
 import React, { useState, useContext } from 'react'
 import { GlobalContext } from './GlobalContext'
+import { useHistory } from 'react-router'
 import axios from 'axios'
 
 
-function Login() {
+function Login({ setLoggedIn }) {
+  const history = useHistory()
   const globals = useContext(GlobalContext)
   const [username, setUsername] = useState(null)
   const [password, setPassword] = useState(null)
@@ -25,7 +27,9 @@ function Login() {
       const response = await axios.post(endpoint, data, { headers: headers })
       const token = response.data.access_token
       sessionStorage.setItem("token", token)
-      console.log(token)
+      setLoggedIn(true)
+      history.push('/')
+      console.log("Logged in successfuly!")
     } catch (err) {
       alert("Error: Invalid username or password.")
     }

@@ -6,6 +6,7 @@ import Header from './components/Header';
 import Home from "./Home";
 import Results from "./Results";
 import Login from "./Login";
+import Permissioned from "./Permissioned";
 
 
 import './App.css';
@@ -18,6 +19,11 @@ const globalsDefault = {
 
 function App() {
   const [files, setFiles] = useState({names: "", source: "", loaded: false})
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  const redirectLogin = () => {
+    history.push('/login')
+  }
 
   return (
     <Router>
@@ -27,21 +33,32 @@ function App() {
           <Switch>
 
             <Route exact path="/login">
-                <Login />
+              {
+                loggedIn ?
+                <Login setLoggedIn={setLoggedIn}/> :
+                <><Header setFiles={setFiles} /><Home files={files} /></>
+              }
             </Route>
 
             <Route exact path="/">
-              <Header setFiles={setFiles} />
-              <Home files={files} />
+              {
+                loggedIn ?
+                <><Header setFiles={setFiles} /><Home files={files} /></> :
+                <Login setLoggedIn={setLoggedIn}/>
+              }
             </Route>
 
             <Route exact path="/results">
-              <Header setFiles={setFiles} />
-              <Results />
+              {
+                loggedIn ?
+                <><Header setFiles={setFiles} /><Results /></> :
+                <Login setLoggedIn={setLoggedIn}/>
+              }
             </Route>
 
           </Switch>
         </div>
+        <button onClick={redirectLogin}>route</button>
 
       </GlobalContext.Provider>
     </Router>
