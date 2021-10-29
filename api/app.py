@@ -1,21 +1,30 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO, emit  # , send
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
+
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 
 import threading
 import os
 import glob
 import random
 import time
+from functools import wraps
 
 from app_utils.nn_threading import monitor_queue
 from app_utils.app_utils import *
+from users import users
 
 
 app = Flask(__name__, static_url_path='/static')
 socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app)
+jwt = JWTManager(app)
+app.config["JWT_SECRET_KEY"] = 'y9JKPd6pWNtca74s'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///queue.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["DEBUG"] = True
@@ -121,6 +130,29 @@ class Data():
         db.session.commit()
 
 
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+
+    user = [n for n in users if n.username == username]
+    if user:
+        user = user[0]  # fetches the user
+    else:
+        return jsonify({"error": "user not found"}), 401
+
+    # handle login.
+    if user.password == password:
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token)
+    else:
+        return jsonify({"error": "invalid password"}), 402
+
+    print(username, password)
+    return jsonify('yay')
+
+
 @app.route('/api/folder/info/<path:subpath>')
 def getDirectory(subpath):
     """Get endpoint for list of files within specified directory."""
@@ -156,6 +188,7 @@ def getDirectory(subpath):
 
 
 @app.route('/api/queue/append', methods=['POST'])
+@jwt_required()
 def appendQueue():
     r = request.json
     form = r['form']
@@ -198,6 +231,7 @@ def uploadFile():
 
 
 @app.route('/api/queue/delete/<pid>')
+@jwt_required()
 def delete_process(pid):
     data.remove_item([pid])
     return jsonify({"status": "success"})
@@ -213,10 +247,11 @@ def fetch_results():
     Returns:
         json: map of folders located within results
     """
+    results_path = 'static/results'
     downlaod = request.args.get('dl')
     path = request.args.get('dir')
 
-    base_path = os.path.join(os.getcwd(),'static/results')
+    base_path = os.path.join(os.getcwd(), results_path)
 
     if path:
         # Another path check.
@@ -238,26 +273,35 @@ def fetch_results():
         return jsonify({"results": files})
     else:
         print(f'Downloading path: {base_path}')
+        # try:
+        zip_name = os.path.basename(base_path)  # Name for saved zip.
+        zip_save = os.path.join(base_path, zip_name)
+        zip_path = compress_directory(base_path, zip_save)  # Makes zip file.
+        print(zip_name, zip_save, base_path)
         try:
-            zip_name = os.path.basename(base_path)  # Name for saved zip.
-            zip_path = compress_directory(base_path, zip_name)  # Makes zip file.
-            yield  send_from_directory(
+            return send_from_directory(
                 base_path, f'{zip_name}.zip', as_attachment=True, attachment_filename=f'{zip_name}.zip')
+        finally:
             os.remove(zip_path)  # Cleanup zip file.
-        except:
-            return jsonify({"error": "unable to download file"}), 500
-
 
 
 # Handler for a message recieved over 'connect' channel
 @socketio.on('connect')
-def test_connect():
-    emit('after connect', {'data': 'Lets dance'})
+def connect():
+    session['authorized'] = True
+    print(session['authorized'])
+    print("connected")
 
 
 @socketio.on('message')
 def handle_message(data):
     print('received message: ' + data)
+
+
+@socketio.on('disconnect')
+def disconnect():
+    print("disconnecting")
+    session['authorized'] = False
 
 
 @socketio.on('progress_data')

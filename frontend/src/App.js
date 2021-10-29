@@ -5,6 +5,7 @@ import { FileContext } from "./FileContext"
 import Header from './components/Header';
 import Home from "./Home";
 import Results from "./Results";
+import Login from "./Login";
 
 
 import './App.css';
@@ -23,18 +24,20 @@ function App() {
       <GlobalContext.Provider value={ globalsDefault }>
 
         <div className="App">
-          <Header setFiles={setFiles} />
-
           <Switch>
 
+            <Route exact path="/login">
+                <Login />
+            </Route>
+
             <Route exact path="/">
+              <Header setFiles={setFiles} />
               <Home files={files} />
             </Route>
 
             <Route exact path="/results">
-              <div>
-                <Results />
-              </div>
+              <Header setFiles={setFiles} />
+              <Results />
             </Route>
 
           </Switch>

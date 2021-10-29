@@ -11,7 +11,7 @@ function ResultFiles() {
   const [searchPath, setPath] = useState('')
   const [files, setFiles] = useState(null)
   const [show, setShow] = useState(false)
-  const [endpoint, setEndpoint] = useState(null)
+  const [download, setDownload] = useState(null)
 
 
   const fetchResultFiles = async() => {
@@ -30,9 +30,9 @@ function ResultFiles() {
   const updateEndpoint = () => {
     let endpoint = '/api/results/available'
     endpoint = `${globals.host}${endpoint}`
-    const params = `?dl=1?dir=${path}`  //Sets download param.
+    const params = `?dl=1&dir=${searchPath}`  //Sets download param.
     endpoint = endpoint + params
-    setEndpoint(endpoint)
+    setDownload(endpoint)
   }
 
   
@@ -65,7 +65,7 @@ function ResultFiles() {
           show={show}
           setShow={setShow}
           path={searchPath}
-          endpoint={endpoint} />
+          download={download} />
       </div>
 
       <div>

@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button'
 import { GlobalContext } from '../../GlobalContext'
 import axios from 'axios'
 
-function DownloadConfirmation({ show, setShow, path, endpoint}) {
+function DownloadConfirmation({ show, setShow, path, download}) {
   const globals = useContext(GlobalContext)
   const handleClose = () => setShow(false);
   
@@ -21,7 +21,8 @@ function DownloadConfirmation({ show, setShow, path, endpoint}) {
     return saveName
   }
 
-  const test = 'http://10.0.0.243:5000/api/results/available?dl=1?dir=test100'
+
+  // const test = 'http://10.0.0.243:5000/api/results/available?dl=1?dir=test100'
 
   return (
     <>
@@ -39,7 +40,7 @@ function DownloadConfirmation({ show, setShow, path, endpoint}) {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleClose} href={endpoint}>
+          <Button variant="primary" onClick={handleClose} href={download}>
             Confirm
           </Button>
         </Modal.Footer>

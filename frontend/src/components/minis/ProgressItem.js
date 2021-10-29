@@ -19,8 +19,13 @@ function ProgressItem({ item, progress, status }) {
   const globals = useContext(GlobalContext)
 
   const deleteItem = async() => {
-    const endpoint = `${globals.host}/api/queue/delete/${item[0]}`
-    await axios.get(endpoint)
+    try {
+      const headers = {'Authorization': `Bearer ${sessionStorage.token}`}
+      const endpoint = `${globals.host}/api/queue/delete/${item[0]}`
+      await axios.get(endpoint, { headers: headers })
+    } catch {
+      alert("Error deleting item... check you are logged in.")
+    }
   }
 
   return (

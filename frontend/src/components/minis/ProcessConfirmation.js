@@ -24,11 +24,13 @@ function ProcessConfirmation({ show, setShow, form }) {
       const data = {form:form}
       const headers = {
         'Access-Control-Allow-Origin': "*",
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.token}`
       }
       const response = await axios.post(`${globals.host}/api/queue/append`, data, { headers: headers })
       handleClose()
     } catch(e) {
+      alert("Error adding item to the queue... check you are logged in.")
       console.log(e)
     }
     setShow(false)
