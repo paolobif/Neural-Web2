@@ -19,3 +19,4 @@ onnx==1.10.1
 Pillow==8.4.0
 pixellib==0.7.1
 pretrainedmodels==0.7.4
+flask-jwt-extended==4.3.1
