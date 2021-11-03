@@ -16,6 +16,7 @@ import time
 from functools import wraps
 
 from app_utils.nn_threading import monitor_queue
+from app_utils.app_utils import Timer
 from app_utils.app_utils import *
 from users import users
 
@@ -285,6 +286,12 @@ def fetch_results():
             os.remove(zip_path)  # Cleanup zip file.
 
 
+@app.route('/api/queue/delete')
+def delete_queue():
+    # TODO: Create endpoint that allows you to delete the entire queue if a bug appears.
+    pass
+
+
 # Handler for a message recieved over 'connect' channel
 @socketio.on('connect')
 def connect():
@@ -336,7 +343,8 @@ def test_disconnect():
 if __name__ == '__main__':
     # Start Threading.
     data = Data()
-    monitoring_thread = threading.Thread(target=monitor_queue, args=[data])
+    timer = Timer(time.time(), time.time())  # Track time since last queue item.
+    monitoring_thread = threading.Thread(target=monitor_queue, args=[data, timer])
     monitoring_thread.start()
 
     socketio.run(app, host="0.0.0.0", port="5000", use_reloader=False)

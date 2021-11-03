@@ -2,11 +2,18 @@ import sys
 sys.path.insert(0, "nn/")
 # sys.path.insert(0, "/Users/paolobifulco/Lab_Work/Worm-Yolo3")
 import os
+import sys
 import cv2
+import pandas as pd
+import numpy as np
 
 from yolov3_core import *
+from sort.sort import *
 from vid_annotater_bulk import YoloToCSV
+from process_YOLO import bb_intersection_over_union, analyzeSORT
 
+
+# ----- BASE YOLO DETECTIONS ----- #
 
 class VidModel(YoloModelLatest):
     """Processes the videos from the gui and saves the results in the
@@ -47,7 +54,8 @@ class VidModel(YoloModelLatest):
         vid = cv2.VideoCapture(self.video_path)
         self.frame_total = vid.get(cv2.CAP_PROP_FRAME_COUNT)
         csv_out_path = os.path.join(self.save_video_path, self.video_name) + ".csv"
-
+        self.full_csv_path = csv_out_path  # Used by YoloCsvToSort to get the correct path.
+        
         # Prep video writer.
         if self.write_vid:
             out_video_path = self.save_video_path + ".avi"
@@ -86,6 +94,68 @@ class VidModel(YoloModelLatest):
         self.data.progress = percentage
 
 
+# ----- SORT OF YOLO DETECTIONS ----- #
+
+class YoloCsvToSort():
+    params = {
+        "threshold": 30,
+        "max_age": 10,
+        "min_hits": 3,
+        "iou_threshold": 0.3,
+        "start_age": 0,
+        "framerate": 144,
+        "slow_move": 5,
+        "delta_overlap": 0.8
+    }
+
+    def __init__(self, csv_path, params=None):
+        self.csv_path = csv_path
+        if params:
+            self.params = params
+        # Load csv:
+        df = pd.read_csv(csv_path,names=('frame', 'x1', 'y1', 'w','h','label'))
+        df['x2']=df[['x1','w']].sum(axis=1)
+        df['y2']=df[['y1','h']].sum(axis=1)
+        self.df = df[['frame','x1', 'y1', 'x2', 'y2']]  
+
+    def sort(self):
+        params = self.params
+        # Init tracker
+        mot_tracker = Sort(params["max_age"], params["min_hits"], params["iou_threshold"])
+        # Get uniqie worms and start tracking.
+        unique = self.df["frame"].unique()
+        csv_outputs = []
+        for x in unique:
+            filtval = self.df['frame'] == x
+            boxes_xyxy = np.asarray(self.df[filtval])[:,1:5]
+
+            track_bbs_ids = mot_tracker.update(boxes_xyxy)
+            for output in track_bbs_ids:
+                x1, y1, x2, y2, label, *_ = output
+                csv_outputs.append([x.tolist(), x1.tolist(), y1.tolist(), x2.tolist(),y2.tolist(),label.tolist()])
+
+        print("Finished sorting")
+        csv_outputs = pd.DataFrame(csv_outputs)
+       
+        csv_outputs.columns = ['frame', 'x1', 'y1', 'x2', 'y2','label']
+        csv_outputs['delta'] = 0
+        csv_outputs['catagory'] = 'alive'
+
+        outputs = analyzeSORT(csv_outputs,
+                              params["threshold"],
+                              params["slow_move"],
+                              params["delta_overlap"],
+                              params["start_age"],
+                              params["framerate"])
+
+        csv_name = os.path.basename(self.csv_path)
+        outputs.loc[0] = ['#expID', csv_name]
+        # Save output csv file
+        save_name = f"sorted_{csv_name}"
+        save_path = os.path.join(os.path.dirname(self.csv_path), save_name)
+        pd.DataFrame(outputs).to_csv(save_path, mode='w', header=True, index=None)
+
+
 if __name__ == '__main__':
     # Just for testing.
     class TestProgress:
@@ -95,3 +165,8 @@ if __name__ == '__main__':
 
     test = TestProgress()
     model = VidModel(test.video, test.save, test)
+    model.process_video()
+
+    # saved_csv = os.path.join(test.save, "505.csv"
+    # test_sort = YoloCsvToSort("./static/results/test_path/505/505.csv")
+    # test_sort.sort()

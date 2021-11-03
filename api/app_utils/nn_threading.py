@@ -1,6 +1,6 @@
 import time
 import os
-from neural import VidModel
+from neural import VidModel, YoloCsvToSort
 
 # Shutdown check.
 shutdown = False
@@ -9,7 +9,7 @@ shutdown = False
 # Begins processing each item in the queue.
 
 
-def monitor_queue(data):
+def monitor_queue(data, timer):
     """Threaded loop that tracks state of queue
     and pops items to be processed.
 
@@ -17,7 +17,7 @@ def monitor_queue(data):
         queue (list): list of process ids.
         db (string): path to database.
     """
-    timer_start = time.time()
+    timer.start = time.time()
     while True:
         data.update_db()
         print("waiting.....")
@@ -33,23 +33,32 @@ def monitor_queue(data):
         time.sleep(0.1)
 
         if shutdown:
-            check_time(timer_start)  # Shuts down computer
+            check_time(timer.start, timer)  # Shuts down computer
 
 
 def process_item(item, data):
     """Takes the item next in queue and begins processing the video and
     updating the state of the process.
+    process: key[1 = annotations, 2 = tracking, 3 = ...]
 
     Args:
         item (list): [pid, path, save, process, state, time]
         data (object): Contains all queue information. From Queue.
     """
+    print(item)
     pid = item[0]
     data.update_state(pid)  # Puts pid into work mode.
 
     # Init model  (vid_path, save_path, data)
     vid_model = VidModel(item[1], item[2], data)
     vid_model.process_video()  # Video analysis.
+
+    # Begin tracking of selected
+    tracking = int(item[3])
+    if tracking == 2:
+        print("Tracking the video")
+        sorter = YoloCsvToSort(vid_model.full_csv_path)
+        sorter.sort()
 
     data.mark_complete(pid)
 
@@ -59,7 +68,7 @@ def process_item(item, data):
     #     print("progress: ", data.progress, "---  item: ", pid)
 
 
-def check_time(timer_start, thresh=7200):
+def check_time(timer_start, timer):
     """Checks if item has been added to the queue within
     specified time window. If not... shuts down computer
     Calculates current time when function is called.
@@ -70,16 +79,4 @@ def check_time(timer_start, thresh=7200):
     """
     current_time = time.time()
     delta = current_time - timer_start
-    if delta > thresh:
-        # scrappy shutdown if in container...
-        try:
-            os.system("sudo shutdown -h now")
-        except Exception as e:
-            print(e)
-
-        try:
-            os.system("bash ../static/shutdown.sh")
-        except Exception as e:
-            print(e)
-            print("unable to shutdown...")
-
+    timer.delta = delta

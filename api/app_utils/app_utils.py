@@ -1,6 +1,23 @@
 import os
 import sys
 import shutil
+import time
+
+
+class Timer():
+    """
+        Object that keeps track of time so the external server
+        knows when to shut down.
+    """
+    def __init__(self, start, current):
+        """
+        Args:
+            start ([float]): [start time for timer]
+            delta ([float]): [difference between start and current time]
+        """
+        self.start = start
+        self.current = current
+        self.delta = current - start
 
 
 def is_safe_path(basedir, path, follow_symlinks=False):
