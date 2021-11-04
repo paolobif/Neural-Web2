@@ -37,7 +37,7 @@ function Login({ setLoggedIn }) {
   
 
   return (
-    <div className="main-color" style={{height: '100vh', backgroundColor: '#282c34'}}>
+    <div className="main-color" style={{height: '100vh',width: '100vw', position: 'absolute',left: '0px', backgroundColor: '#282c34'}}>
       <div className="m-4" id="login">
         <h3>Worm Neural</h3>
         <h5 className="mb-5">login</h5>

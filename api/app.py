@@ -273,17 +273,20 @@ def fetch_results():
         files = os.listdir(base_path)
         return jsonify({"results": files})
     else:
-        print(f'Downloading path: {base_path}')
-        # try:
-        zip_name = os.path.basename(base_path)  # Name for saved zip.
-        zip_save = os.path.join(base_path, zip_name)
-        zip_path = compress_directory(base_path, zip_save)  # Makes zip file.
-        print(zip_name, zip_save, base_path)
         try:
-            return send_from_directory(
-                base_path, f'{zip_name}.zip', as_attachment=True, attachment_filename=f'{zip_name}.zip')
-        finally:
-            os.remove(zip_path)  # Cleanup zip file.
+            print(f'Downloading path: {base_path}')
+            # try:
+            zip_name = os.path.basename(base_path)  # Name for saved zip.
+            zip_save = os.path.join(base_path, zip_name)
+            zip_path = compress_directory(base_path, zip_save)  # Makes zip file.
+            print(zip_name, zip_save, base_path)
+            try:
+                return send_from_directory(
+                    base_path, f'{zip_name}.zip', as_attachment=True, attachment_filename=f'{zip_name}.zip')
+            finally:
+                os.remove(zip_path)  # Cleanup zip file.
+        except:
+            print("failed download")
 
 
 @app.route('/api/queue/delete')
