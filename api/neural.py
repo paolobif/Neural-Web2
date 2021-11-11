@@ -108,8 +108,9 @@ class YoloCsvToSort():
         "delta_overlap": 0.8
     }
 
-    def __init__(self, csv_path, params=None):
+    def __init__(self, csv_path, save_path, params=None):
         self.csv_path = csv_path
+        self.save_path = save_path
         if params:
             self.params = params
         # Load csv:
@@ -152,9 +153,8 @@ class YoloCsvToSort():
         outputs.loc[0] = ['#expID', csv_name]
         # Save output csv file
         save_name = f"sorted_{csv_name}"
-        # save_path = os.path.join(os.path.dirname(self.csv_path), save_name)
-        save_path = self.csv_path
-        pd.DataFrame(outputs).to_csv(save_path, mode='w', header=True, index=None)
+        _save_path = os.path.join(self.save_path, save_name)
+        pd.DataFrame(outputs).to_csv(_save_path, mode='w', header=True, index=None)
 
 
 if __name__ == '__main__':

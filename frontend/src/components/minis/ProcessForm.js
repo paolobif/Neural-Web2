@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import ProcessConfirmation from './ProcessConfirmation'
+import TrackingSettings from './TrackingSettings'
 
 function ProcessForm({ selected, source }) {
   const [show, setShow] = useState(false);
@@ -9,9 +10,20 @@ function ProcessForm({ selected, source }) {
   const submitHandler = (e) => {
     e.preventDefault()
     if (selected.length > 0) {
+      const trackingParams = {
+        threshold: e.target.thresholdVal.value,
+        maxAge: e.target.maxAgeVal.value,
+        minHits: e.target.minHitsVal.value,
+        iouThreshold: e.target.iouThreshVal.value,
+        startAge: e.target.startAgeVal.value,
+        framerate: e.target.framerateVal.value,
+        slowMove: e.target.slowMoveVal.value,
+        deltaOverlap: e.target.deltaOverlapVal.value
+      }
+      console.log(trackingParams)
       const saveName =  e.target[0].value
       const processType = e.target.gridRadios.value
-      setForm({name: saveName, type: processType, selected:selected, source:source})
+      setForm({name: saveName, type: processType, selected:selected, source:source, tracking:trackingParams})
       setShow(true)
     }
   }
@@ -50,6 +62,7 @@ function ProcessForm({ selected, source }) {
             </div>
           </div>
         </div>
+        <TrackingSettings />
         <div className="row m-4">
           <button
             type="submit"

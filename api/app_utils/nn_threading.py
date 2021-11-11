@@ -57,7 +57,8 @@ def process_item(item, data):
     tracking = int(item[3])
     if tracking == 2:
         print("Tracking the video")
-        sorter = YoloCsvToSort(vid_model.full_csv_path)
+        sorter = YoloCsvToSort(vid_model.full_csv_path, vid_model.save_path)
+        # Save path points to the batch parent directory.
         sorter.sort()
 
     data.mark_complete(pid)

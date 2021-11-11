@@ -37,6 +37,7 @@ class Queue(db.Model):
     path = db.Column(db.String(120), unique=False, nullable=False)
     save = db.Column(db.String(120), unique=False, nullable=False)
     process = db.Column(db.String(80), unique=False, nullable=False)
+    tracking = db.Column(db.PickleType(), unique=False, nullable=True) 
     state = db.Column(db.Integer, unique=False, nullable=False)
     time = db.Column(db.Float, unique=False, nullable=False)
 
@@ -201,6 +202,7 @@ def appendQueue():
                           path=os.path.join(form['source'], name),
                           save=form['name'],
                           process=form['type'],
+                          tracking=form['tracking'],
                           state=0,
                           time=unix_time)
         db.session.add(new_entry)

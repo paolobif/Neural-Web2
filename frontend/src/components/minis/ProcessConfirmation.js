@@ -43,7 +43,7 @@ function ProcessConfirmation({ show, setShow, form }) {
         <Modal.Header closeButton>
           <Modal.Title>Confirm Process</Modal.Title>
         </Modal.Header>
-        <Modal.Body back style={{backgroundColor: "#EEEEEE"}}>
+        <Modal.Body back="true" style={{backgroundColor: "#EEEEEE"}}>
           <RowItem form={form} />
         </Modal.Body>
         <Modal.Footer>
