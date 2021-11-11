@@ -44,7 +44,7 @@ class VidModel(YoloModelLatest):
         self.video_path = video_path
         self.save_path = os.path.join(self.save_root, save_path)
         self.video_name = os.path.splitext(os.path.basename(video_path))[0]
-        self.save_video_path = os.path.join(self.save_path, self.video_name)
+        self.save_video_path = os.path.join(self.save_path) #, self.video_name)
 
         os.makedirs(self.save_path, exist_ok=True)  # makes save parent dir.
         os.makedirs(self.save_video_path, exist_ok=True)  # save for child.
@@ -152,7 +152,8 @@ class YoloCsvToSort():
         outputs.loc[0] = ['#expID', csv_name]
         # Save output csv file
         save_name = f"sorted_{csv_name}"
-        save_path = os.path.join(os.path.dirname(self.csv_path), save_name)
+        # save_path = os.path.join(os.path.dirname(self.csv_path), save_name)
+        save_path = self.csv_path
         pd.DataFrame(outputs).to_csv(save_path, mode='w', header=True, index=None)
 
 
