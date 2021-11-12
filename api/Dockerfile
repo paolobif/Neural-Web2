@@ -21,7 +21,7 @@ RUN pip3 install wheel && pip3 install pandas && pip3 install opencv-python && p
 RUN pip3 install torch==1.9.1+cu111 torchvision==0.10.1+cu111 torchaudio==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
 
 COPY requirements.txt ./
-RUN pip3 install -U -r requirements.txt
+RUN pip3 install -U -r requirements.txt && pip3 install --upgrade numpy
 
 #SETUP ENVIROMent
 

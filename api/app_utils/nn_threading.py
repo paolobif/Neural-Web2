@@ -42,7 +42,7 @@ def process_item(item, data):
     process: key[1 = annotations, 2 = tracking, 3 = ...]
 
     Args:
-        item (list): [pid, path, save, process, state, time]
+        item (list): [pid, path, save, process, tracking, state, time]
         data (object): Contains all queue information. From Queue.
     """
     print(item)
@@ -54,9 +54,10 @@ def process_item(item, data):
     vid_model.process_video()  # Video analysis.
 
     # Begin tracking of selected
-    tracking = int(item[3])
-    if tracking == 2:
+    process_type = int(item[3])
+    if process_type == 2:
         print("Tracking the video")
+        tracking_params = item[4]
         sorter = YoloCsvToSort(vid_model.full_csv_path, vid_model.save_path)
         # Save path points to the batch parent directory.
         sorter.sort()

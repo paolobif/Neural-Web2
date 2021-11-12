@@ -12,13 +12,13 @@ function ProcessForm({ selected, source }) {
     if (selected.length > 0) {
       const trackingParams = {
         threshold: e.target.thresholdVal.value,
-        maxAge: e.target.maxAgeVal.value,
-        minHits: e.target.minHitsVal.value,
-        iouThreshold: e.target.iouThreshVal.value,
-        startAge: e.target.startAgeVal.value,
+        max_age: e.target.maxAgeVal.value,
+        min_hits: e.target.minHitsVal.value,
+        iou_threshold: e.target.iouThreshVal.value,
+        start_age: e.target.startAgeVal.value,
         framerate: e.target.framerateVal.value,
-        slowMove: e.target.slowMoveVal.value,
-        deltaOverlap: e.target.deltaOverlapVal.value
+        slow_move: e.target.slowMoveVal.value,
+        delta_overlap: e.target.deltaOverlapVal.value
       }
       console.log(trackingParams)
       const saveName =  e.target[0].value
