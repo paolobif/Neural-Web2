@@ -15,13 +15,13 @@ function ProgressItem({ item, progress, status }) {
                   borderLeftRadius: "5px",
                   boxShadow: "5px 5px #61dafb" //#282c34",
                 }
-  
+
   const globals = useContext(GlobalContext)
 
   const deleteItem = async() => {
     try {
       const headers = {'Authorization': `Bearer ${sessionStorage.token}`}
-      const endpoint = `${globals.host}/api/queue/delete/${item[0]}`
+      const endpoint = `/api/queue/delete/${item[0]}`
       await axios.get(endpoint, { headers: headers })
     } catch {
       alert("Error deleting item... check you are logged in.")
@@ -39,7 +39,7 @@ function ProgressItem({ item, progress, status }) {
         <p className="mb-1 ms-2">
           <i>from:</i> <b>{item[1]}</b>  <i>save:</i> <b>{item[2]}</b> <i>type:</i> <b>{item[3]}</b>
         </p>
-        <ProgressBar striped variant={status} now={progress} label={`${progress}%`} className="ms-3"/> 
+        <ProgressBar striped variant={status} now={progress} label={`${progress}%`} className="ms-3"/>
       </div>
     </div>
   )

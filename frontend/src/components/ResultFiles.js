@@ -16,10 +16,10 @@ function ResultFiles() {
 
   const fetchResultFiles = async() => {
     let endpoint = '/api/results/available'
-    endpoint = `${globals.host}${endpoint}`
-    
+    // endpoint = `${globals.host}${endpoint}`
+
     const params = `?dir=${searchPath}`
-    
+
     endpoint= endpoint + params
     console.log(endpoint)
     const response = await axios.get(endpoint)
@@ -29,13 +29,13 @@ function ResultFiles() {
 
   const updateEndpoint = () => {
     let endpoint = '/api/results/available'
-    endpoint = `${globals.host}${endpoint}`
+    // endpoint = `${globals.host}${endpoint}`
     const params = `?dl=1&dir=${searchPath}`  //Sets download param.
     endpoint = endpoint + params
     setDownload(endpoint)
   }
 
-  
+
   useEffect(() => {
     fetchResultFiles()
     updateEndpoint()
@@ -48,11 +48,11 @@ function ResultFiles() {
         <h3 onClick={() => setPath('')}>Results</h3>
         <hr></hr>
         <h6 className="text-start">{searchPath ? searchPath : null}</h6>
-        {files ? 
-          files.map(name => <File 
+        {files ?
+          files.map(name => <File
                               name={name}
                               setPath={setPath}
-                              searchPath={searchPath}/>) 
+                              searchPath={searchPath}/>)
           : console.log("none")
         }
         <button
@@ -61,7 +61,7 @@ function ResultFiles() {
           style={{float:"left"}}>
           Download
         </button>
-        <DownloadConfirmation 
+        <DownloadConfirmation
           show={show}
           setShow={setShow}
           path={searchPath}

@@ -28,7 +28,7 @@ function FileUpload() {
   // Handles singular file upload.
   const uploadOneFile = async (file) => {
     const endpoint = "/api/files/upload"
-    const path = `${globals.host}${endpoint}`
+    const path = endpoint
 
     const headers = {
       'Access-Control-Allow-Origin': "*",
@@ -42,7 +42,7 @@ function FileUpload() {
     console.log(file.name)
     formData.append("dest", destination)
 
-    const response = await axios.post(path, formData, { 
+    const response = await axios.post(path, formData, {
       headers: headers,
       onUploadProgress: (progressEvent) => {
         // Modifies state
@@ -54,7 +54,7 @@ function FileUpload() {
         if (totalLength !== null) {
 					setProgressData( Math.round( (progressEvent.loaded * 100) / totalLength) );
         }
-      } 
+      }
     })
     setIsUploading(false)
   }
@@ -74,10 +74,10 @@ function FileUpload() {
     <div class="mt-3 pt-3">
       <h5>select files and destination</h5>
       <div class="mt-3">
-        <input class="form-control" type="file" multiple="multiple" onChange={onFileChange} /> 
+        <input class="form-control" type="file" multiple="multiple" onChange={onFileChange} />
         {/* multiple="multiple" accept="video/*" */}
         <input
-          class="form-control" 
+          class="form-control"
           list="datalistOptions"
           id="dirselect"
           placeholder="Destination"
@@ -108,4 +108,3 @@ function FileUpload() {
 }
 
 export default FileUpload
- 

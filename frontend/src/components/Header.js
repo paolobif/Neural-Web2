@@ -21,8 +21,8 @@ function Header({ setFiles }) {
 
   const fetchFiles = async() => {
     try {
-      const endpoint = path.join('api/folder/info/', pathVal)
-      const apiPath = `${globals.host}/${endpoint}`
+      const endpoint = path.join('/api/folder/info/', pathVal)
+      const apiPath = endpoint
       const response = await axios.get(apiPath)
       setFiles({...response.data, loaded:true})
     } catch (e) {
