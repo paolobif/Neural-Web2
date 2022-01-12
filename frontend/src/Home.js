@@ -17,12 +17,12 @@ function Home({ files }) {
                                   })
 
   useEffect(() => {
-    const newSocket = io(globals.host, {
+    const newSocket = io('/', {
       extraHeaders: {
         'Access-Control-Allow-Origin': "*"
       }
     })
-    
+
     setSocket(newSocket)
     console.log('connected')
     newSocket.on('progress_data', (queue_info) => {setData(queue_info)})

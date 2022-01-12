@@ -37,7 +37,7 @@ class Queue(db.Model):
     path = db.Column(db.String(120), unique=False, nullable=False)
     save = db.Column(db.String(120), unique=False, nullable=False)
     process = db.Column(db.String(80), unique=False, nullable=False)
-    tracking = db.Column(db.PickleType(), unique=False, nullable=True) 
+    tracking = db.Column(db.PickleType(), unique=False, nullable=True)
     state = db.Column(db.Integer, unique=False, nullable=False)
     time = db.Column(db.Float, unique=False, nullable=False)
 
@@ -262,7 +262,7 @@ def fetch_results():
         if is_safe_path(base_path, path):
             base_path = os.path.join(base_path, path)
         else:
-            return jsonify({"error": "invalid path"}), 400 
+            return jsonify({"error": "invalid path"}), 400
 
     print(base_path)
     if not path_safe(base_path):  # Make sure the path doesn't traverse.
@@ -276,12 +276,16 @@ def fetch_results():
         return jsonify({"results": files})
     else:
         try:
-            print(f'Downloading path: {base_path}')
+            short_path = os.path.join(results_path, path)
+
+            # print(f'Downloading path: {base_path}')
+
             # try:
-            zip_name = os.path.basename(base_path)  # Name for saved zip.
-            zip_save = os.path.join(base_path, zip_name)
-            zip_path = compress_directory(base_path, zip_save)  # Makes zip file.
-            print(zip_name, zip_save, base_path)
+            zip_name = os.path.basename(short_path)  # base_path # Name for saved zip.
+            zip_save = os.path.join(short_path, zip_name)  # (base_path, zip_name)
+            full_save_path = os.path.join(os.path.abspath("."), short_path)
+            zip_path = compress_directory(full_save_path, zip_save)  # (base_path, zip_save) # Makes zip file.
+            print(zip_name, zip_save, full_save_path)
             try:
                 return send_from_directory(
                     base_path, f'{zip_name}.zip', as_attachment=True, attachment_filename=f'{zip_name}.zip')

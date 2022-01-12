@@ -12,7 +12,7 @@ import './App.css';
 
 
 const globalsDefault = {
-  host: "http://10.0.0.243:5000"
+  host: "http://localhost:5000"
 }
 
 

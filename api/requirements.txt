@@ -1,5 +1,4 @@
 scikit_image
-filterpy
 scipy==1.6.0
 thop==0.0.31.post2005241907
 Flask_SQLAlchemy==2.5.1

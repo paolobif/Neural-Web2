@@ -17,7 +17,8 @@ function Login({ setLoggedIn }) {
   }
 
   const sendLoginRequest = async() => {
-    const endpoint = `${globals.host}/login`
+    // const endpoint = `${globals.host}/login`
+    const endpoint = `/login`
     const data = {username: username, password: password}
     const headers = {
       'Access-Control-Allow-Origin': "*",
@@ -34,7 +35,7 @@ function Login({ setLoggedIn }) {
       alert("Error: Invalid username or password.")
     }
   }
-  
+
 
   return (
     <div className="main-color" style={{height: '100vh',width: '100vw', position: 'absolute',left: '0px', backgroundColor: '#282c34'}}>
