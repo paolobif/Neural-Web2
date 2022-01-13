@@ -8,7 +8,7 @@ import axios from 'axios'
 function DownloadConfirmation({ show, setShow, path, download}) {
   const globals = useContext(GlobalContext)
   const handleClose = () => setShow(false);
-  
+
 
   const extractSaveName = (path) => {
     // Gets directory name from path.
@@ -21,6 +21,10 @@ function DownloadConfirmation({ show, setShow, path, download}) {
     return saveName
   }
 
+  const handleDownloadClick = async() => {
+    handleClose()
+    await axios.get(download)
+  }
 
   // const test = 'http://10.0.0.243:5000/api/results/available?dl=1?dir=test100'
 
@@ -40,7 +44,7 @@ function DownloadConfirmation({ show, setShow, path, download}) {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleClose} href={download}>
+          <Button variant="primary" onClick={handleDownloadClick} href={download}>
             Confirm
           </Button>
         </Modal.Footer>

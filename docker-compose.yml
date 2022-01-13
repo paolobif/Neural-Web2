@@ -1,20 +1,33 @@
-version: "2.3"
+version: "3.8"
 services:
   web:
     # image: neural_frontend
     build: ./frontend
     ports:
-      - "80:80"
+      - 80:80
     volumes:
       - ./frontend:/app
+    networks:
+      - home
 
   nn:
     # image: nn_api
     build: ./api
-    # command: nvidia-smi
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     ports:
-      - "5000:5000"
+      - 5000:5000
     volumes:
       - ./api:/app
       - ../Experiments:/app/static
+    networks:
+      - home
+    links:
+      - web
+
+networks:
+  home:
+    name: my-bridge

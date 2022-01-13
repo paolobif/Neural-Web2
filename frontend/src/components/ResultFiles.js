@@ -35,7 +35,6 @@ function ResultFiles() {
     setDownload(endpoint)
   }
 
-
   useEffect(() => {
     fetchResultFiles()
     updateEndpoint()

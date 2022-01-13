@@ -25,7 +25,7 @@ function Login({ setLoggedIn }) {
       'Content-Type': 'application/json'
     }
     try {
-      const response = await axios.post(endpoint, data, { headers: headers })
+      const response = await axios.post(endpoint, data, {headers: headers })
       const token = response.data.access_token
       sessionStorage.setItem("token", token)
       setLoggedIn(true)
