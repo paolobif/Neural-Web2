@@ -13,6 +13,7 @@ import os
 import glob
 import random
 import time
+import json
 from functools import wraps
 
 from app_utils.nn_threading import monitor_queue
@@ -33,13 +34,13 @@ db = SQLAlchemy(app)
 
 
 class Queue(db.Model):
-    pid = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String(120), unique=False, nullable=False)
-    save = db.Column(db.String(120), unique=False, nullable=False)
-    process = db.Column(db.String(80), unique=False, nullable=False)
-    tracking = db.Column(db.PickleType(), unique=False, nullable=True)
-    state = db.Column(db.Integer, unique=False, nullable=False)
-    time = db.Column(db.Float, unique=False, nullable=False)
+    pid = db.Column(db.Integer, primary_key=True)  # ID
+    path = db.Column(db.String(120), unique=False, nullable=False)  # Video path
+    save = db.Column(db.String(120), unique=False, nullable=False)  # Save name
+    process = db.Column(db.PickleType(), unique=False, nullable=False)  # Process and model params
+    tracking = db.Column(db.PickleType(), unique=False, nullable=True)  # Tracking params
+    state = db.Column(db.Integer, unique=False, nullable=False)  # State for the queue
+    time = db.Column(db.Float, unique=False, nullable=False)  # Time of upload
 
     def __repr__(self):
         return f'<Queue {self.pid}'
@@ -119,7 +120,7 @@ class Data():
         results = []
         for res in query_results:
             res_list = [res.pid, res.path, res.save,
-                        res.process, res.state, res.time]
+                        res.process, res.tracking, res.state, res.time]
             results.append(res_list)
         results = sorted(results, key=lambda x: x[5], reverse=reverse)
         return results[:limit]
@@ -201,7 +202,7 @@ def appendQueue():
         new_entry = Queue(pid=pid,
                           path=os.path.join(form['source'], name),
                           save=form['name'],
-                          process=form['type'],
+                          process=form['params'],
                           tracking=form['tracking'],
                           state=0,
                           time=unix_time)

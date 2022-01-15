@@ -13,20 +13,22 @@ services:
   nn:
     # image: nn_api
     build: ./api
+    # command: python -c "import torch; print(torch.cuda.is_available())"
+    runtime: nvidia
     deploy:
       resources:
         reservations:
           devices:
-            - capabilities: [gpu]
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
     ports:
       - 5000:5000
     volumes:
       - ./api:/app
-      - ../Experiments:/app/static
+      - ./api/static:/app/static
     networks:
       - home
-    links:
-      - web
 
 networks:
   home:

@@ -42,7 +42,15 @@ function RowItem({ form }) {
           Pipeline:
         </div>
         <div className="col-8">
-          {processTypes[form.type]}
+          {processTypes[form.params.type]}
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">
+          Weights:
+        </div>
+        <div className="col-8">
+          {form.params.weights}
         </div>
       </div>
       <hr></hr>

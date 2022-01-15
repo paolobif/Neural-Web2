@@ -37,7 +37,7 @@ function ProgressItem({ item, progress, status }) {
           <h6 className="mb-0">PID: {item[0]} </h6>
         }
         <p className="mb-1 ms-2">
-          <i>from:</i> <b>{item[1]}</b>  <i>save:</i> <b>{item[2]}</b> <i>type:</i> <b>{item[3]}</b>
+          <i>from:</i> <b>{item[1]}</b>  <i>save:</i> <b>{item[2]}</b> <i>type:</i> <b>{item[3].type}</b>
         </p>
         <ProgressBar striped variant={status} now={progress} label={`${progress}%`} className="ms-3"/>
       </div>

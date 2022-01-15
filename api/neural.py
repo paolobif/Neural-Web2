@@ -38,7 +38,11 @@ class VidModel(YoloModelLatest):
 
     write_vid = False
 
-    def __init__(self, video_path, save_path, data):
+    def __init__(self, video_path, save_path, data, weights=False):
+        # Set weights if provided.
+        if weights and type(weights) == str:
+            self.settings['weights_path'] = os.path.join('nn/weights/', weights)
+
         super().__init__(self.settings)
         self.data = data  # IMPORTANT! data.progress has queue info.
         self.video_path = video_path
@@ -55,7 +59,7 @@ class VidModel(YoloModelLatest):
         self.frame_total = vid.get(cv2.CAP_PROP_FRAME_COUNT)
         csv_out_path = os.path.join(self.save_video_path, self.video_name) + ".csv"
         self.full_csv_path = csv_out_path  # Used by YoloCsvToSort to get the correct path.
-        
+
         # Prep video writer.
         if self.write_vid:
             out_video_path = self.save_video_path + ".avi"
@@ -117,7 +121,7 @@ class YoloCsvToSort():
         df = pd.read_csv(csv_path,names=('frame', 'x1', 'y1', 'w','h','label'))
         df['x2']=df[['x1','w']].sum(axis=1)
         df['y2']=df[['y1','h']].sum(axis=1)
-        self.df = df[['frame','x1', 'y1', 'x2', 'y2']]  
+        self.df = df[['frame','x1', 'y1', 'x2', 'y2']]
 
     def sort(self):
         params = self.params
@@ -137,7 +141,7 @@ class YoloCsvToSort():
 
         print("Finished sorting")
         csv_outputs = pd.DataFrame(csv_outputs)
-       
+
         csv_outputs.columns = ['frame', 'x1', 'y1', 'x2', 'y2','label']
         csv_outputs['delta'] = 0
         csv_outputs['catagory'] = 'alive'

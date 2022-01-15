@@ -10,6 +10,8 @@ function ProcessForm({ selected, source }) {
   const submitHandler = (e) => {
     e.preventDefault()
     if (selected.length > 0) {
+      const processType = e.target.gridRadios.value
+
       const trackingParams = {
         threshold: e.target.thresholdVal.value,
         max_age: e.target.maxAgeVal.value,
@@ -20,10 +22,20 @@ function ProcessForm({ selected, source }) {
         slow_move: e.target.slowMoveVal.value,
         delta_overlap: e.target.deltaOverlapVal.value
       }
-      console.log(trackingParams)
+
+      const modelParams = {
+        type: processType,
+        weights: e.target.weights.value
+      }
+
       const saveName =  e.target[0].value
-      const processType = e.target.gridRadios.value
-      setForm({name: saveName, type: processType, selected:selected, source:source, tracking:trackingParams})
+
+      setForm({name: saveName,
+               selected: selected,
+               source: source,
+               tracking: trackingParams,
+               params: modelParams,
+               process: processType})
       setShow(true)
     }
   }
@@ -62,7 +74,21 @@ function ProcessForm({ selected, source }) {
             </div>
           </div>
         </div>
+
+        <div className='row mt-3 b-2' >
+          <label htmlFor="weights" className="col-sm-2 col-form-label">Weights</label>
+          <select id="weights" class="form-select" style={{maxWidth: "500px"}}>
+            <optgroup label="Model Weights">
+              <option value="416_1_4_full_best200ep.pt">416_1_4_full_best200ep.pt</option>
+              <option value="GMC101_10_13_21_best100ep.pt">GMC101_10_13_21_best100ep.pt</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <hr className='mt-4 mb-4'></hr>
+
         <TrackingSettings />
+
         <div className="row m-4">
           <button
             type="submit"
@@ -72,6 +98,7 @@ function ProcessForm({ selected, source }) {
             Submit
           </button>
         </div>
+
       </form>
       <ProcessConfirmation show={show} setShow={setShow} form={form} />
     </div>

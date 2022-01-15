@@ -107,3 +107,12 @@
 .track-box {
   width: 200px;
 }
+
+.result-list {
+  /* display: flex; */
+  /* flex-wrap: wrap; */
+  max-width: 400px;
+  /* display: flex; */
+  height: 70%;
+  overflow-y: scroll;
+}

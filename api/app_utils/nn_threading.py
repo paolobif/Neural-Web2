@@ -48,16 +48,20 @@ def process_item(item, data):
     print(item)
     pid = item[0]
     data.update_state(pid)  # Puts pid into work mode.
+    process = item[3]
+    print("process:", process)
 
     # Init model  (vid_path, save_path, data)
-    vid_model = VidModel(item[1], item[2], data)
+    weights = process['weights']
+    vid_model = VidModel(item[1], item[2], data, weights=weights)
     vid_model.process_video()  # Video analysis.
 
     # Begin tracking of selected
-    process_type = int(item[3])
+    process_type = int(process['type'])
     if process_type == 2:
         print("Tracking the video")
         tracking_params = item[4]
+        print("tracking params:", tracking_params)
         sorter = YoloCsvToSort(vid_model.full_csv_path, vid_model.save_path)
         # Save path points to the batch parent directory.
         sorter.sort()

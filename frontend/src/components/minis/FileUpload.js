@@ -86,7 +86,7 @@ function FileUpload() {
         />
         <datalist id="datalistOptions">
           <option value="videos" />
-          <option value ="" />
+          <option value ="test" />
         </datalist>
         <div class="mt-2">
           <ProgressBar

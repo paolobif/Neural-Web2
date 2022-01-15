@@ -47,13 +47,15 @@ function ResultFiles() {
         <h3 onClick={() => setPath('')}>Results</h3>
         <hr></hr>
         <h6 className="text-start">{searchPath ? searchPath : null}</h6>
-        {files ?
-          files.map(name => <File
-                              name={name}
-                              setPath={setPath}
-                              searchPath={searchPath}/>)
-          : console.log("none")
-        }
+        <div className='result-list'>
+          {files ?
+            files.map(name => <File
+              name={name}
+              setPath={setPath}
+              searchPath={searchPath}/>)
+              : console.log("none")
+          }
+        </div>
         <button
           className="btn btn-info mt-2 btn-sm"
           onClick={() => setShow(true)}
