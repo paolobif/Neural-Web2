@@ -8,7 +8,7 @@ function TrackingSettings() {
         <div className="track-box">
           <div className="input-group input-grou-sm m-1">
             <span className="input-group-text" id="threshold">Threshold</span>
-            <input type="number" className="form-control" id="thresholdVal" placeholder="30" defaultalue="30"/>
+            <input type="number" className="form-control" id="thresholdVal" placeholder="30" defaultValue="30"/>
           </div>
         </div>
 
@@ -18,7 +18,7 @@ function TrackingSettings() {
             <input type="number" className="form-control" id="maxAgeVal" placeholder="10" defaultValue="10"/>
           </div>
         </div>
-        
+
         <div className="track-box">
           <div className="input-group input-grou-sm m-1">
             <span className="input-group-text" id="MinHits">Min Hits</span>

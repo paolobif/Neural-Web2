@@ -53,16 +53,25 @@ def process_item(item, data):
 
     # Init model  (vid_path, save_path, data)
     weights = process['weights']
-    vid_model = VidModel(item[1], item[2], data, weights=weights)
+    vid_model = VidModel(item[1], item[2], data, weights=weights, circle=True)
     vid_model.process_video()  # Video analysis.
 
     # Begin tracking of selected
     process_type = int(process['type'])
     if process_type == 2:
         print("Tracking the video")
+
+        # Convert tracking params from string to floats.
         tracking_params = item[4]
+        for key, val in tracking_params.items():
+            tracking_params[key] = float(val)
+
         print("tracking params:", tracking_params)
-        sorter = YoloCsvToSort(vid_model.full_csv_path, vid_model.save_path)
+        sorter = YoloCsvToSort(vid_model.full_csv_path,
+                               vid_model.save_path,
+                               params=tracking_params,
+                               circle=True,
+                               interval=200)
         # Save path points to the batch parent directory.
         sorter.sort()
 

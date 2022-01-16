@@ -99,7 +99,7 @@ class Data():
         # Removes working and adds back to the queue.
         # if self.progress < 100:
         for working in self.w_query:
-            working.state = 0
+            working.state = 2
         # elif self.progress == 100:
         #     for working in self.w_query:
         #         working.state = 1
@@ -283,15 +283,23 @@ def fetch_results():
 
             # try:
             zip_name = os.path.basename(short_path)  # base_path # Name for saved zip.
-            zip_save = os.path.join(short_path, zip_name)  # (base_path, zip_name)
+            # zip_save = os.path.join(short_path, zip_name)  # (base_path, zip_name)
+            zip_save = f"./static/temp/{zip_name}"
             full_save_path = os.path.join(os.path.abspath("."), short_path)
-            zip_path = compress_directory(full_save_path, zip_save)  # (base_path, zip_save) # Makes zip file.
-            print(zip_name, zip_save, full_save_path)
-            try:
-                return send_from_directory(
-                    base_path, f'{zip_name}.zip', as_attachment=True, attachment_filename=f'{zip_name}.zip')
-            finally:
-                os.remove(zip_path)  # Cleanup zip file.
+
+            if os.path.exists(full_save_path):
+                print("zipping:", full_save_path)
+                zip_path = compress_directory(full_save_path, zip_save)  # (base_path, zip_save) # Makes zip file.
+                print(zip_name, zip_save, full_save_path)
+                try:
+                    return send_from_directory(
+                        "./static/temp", f'{zip_name}.zip', as_attachment=True, attachment_filename=f'{zip_name}.zip')
+                finally:
+                    os.remove(zip_path)  # Cleanup zip file.
+
+            else:
+                return jsonify({"error": "issue with downloading"}), 500
+
         except:
             print("failed download")
 

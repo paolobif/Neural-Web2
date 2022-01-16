@@ -5,6 +5,7 @@ import TrackingSettings from './TrackingSettings'
 function ProcessForm({ selected, source }) {
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({name: "", type: ""});
+  const [circle, setCircle] = useState(false)
 
 
   const submitHandler = (e) => {
@@ -73,6 +74,13 @@ function ProcessForm({ selected, source }) {
               </label>
             </div>
           </div>
+        </div>
+
+        <div className="form-check mt-2">
+          <label className="form-check-label" htmlFor="circle">
+            Circle Crop
+          </label>
+          <input className="form-check-input" type="checkbox" value="" id="circle" />
         </div>
 
         <div className='row mt-3 b-2' >

@@ -38,7 +38,7 @@ class VidModel(YoloModelLatest):
 
     write_vid = False
 
-    def __init__(self, video_path, save_path, data, weights=False):
+    def __init__(self, video_path, save_path, data, weights=False, circle=False, interval=200):
         # Set weights if provided.
         if weights and type(weights) == str:
             self.settings['weights_path'] = os.path.join('nn/weights/', weights)
@@ -49,6 +49,8 @@ class VidModel(YoloModelLatest):
         self.save_path = os.path.join(self.save_root, save_path)
         self.video_name = os.path.splitext(os.path.basename(video_path))[0]
         self.save_video_path = os.path.join(self.save_path) #, self.video_name)
+        self.circle = circle
+        self.interval = interval
 
         os.makedirs(self.save_path, exist_ok=True)  # makes save parent dir.
         os.makedirs(self.save_video_path, exist_ok=True)  # save for child.
@@ -74,10 +76,18 @@ class VidModel(YoloModelLatest):
         print(f"Processing video: {self.video_path}")
         print(f"Saving to: {self.save_video_path}")
 
+        # Init circle cropper.
+        if self.circle:
+            cropper = ImageCircleCrop(self.interval)  # interval specifys how often to re-calc circle.
+
         # Process Video.
         for _ in range(int(self.frame_total)):
             _, frame = vid.read()
             self.current = vid.get(cv2.CAP_PROP_POS_FRAMES)
+
+            if self.circle:
+                frame = cropper.update(frame)  # Crops the image to just the well.
+
             toCSV = YoloToCSV(self, frame, self.current)
             toCSV.write_to_csv(csv_out_path)
 
